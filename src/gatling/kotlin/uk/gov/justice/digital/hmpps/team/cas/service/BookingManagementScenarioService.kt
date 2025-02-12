@@ -15,59 +15,61 @@ class BookingManagementScenarioService(
     fun buildScenario(
         scenarioName: String,
         premiseQCode: String,
-        pauseOnViewPremisePage: Long,
-        pauseOnViewPlacementPage: Long,
-        pauseOnRecordArrivalPage: Long,
-        pauseAfterRecordArrival: Long,
-        pauseOnEditKeyWorkerPage: Long,
-        pauseAfterKeyWorkerEdited: Long,
-        pauseOnRecordDeparturePage: Long,
-        pauseAfterSubmitRecordDeparture: Long,
-        pauseOnRecordDepartureNotesPage: Long,
-        pauseAfterSubmitRecordDepartureNotes: Long,
+        pauseBeforeStart: Pair<Long, Long>,
+        pauseOnViewPremisePage: Pair<Long, Long>,
+        pauseOnViewPlacementPage: Pair<Long, Long>,
+        pauseOnRecordArrivalPage: Pair<Long, Long>,
+        pauseAfterRecordArrival: Pair<Long, Long>,
+        pauseOnEditKeyWorkerPage: Pair<Long, Long>,
+        pauseAfterKeyWorkerEdited: Pair<Long, Long>,
+        pauseOnRecordDeparturePage: Pair<Long, Long>,
+        pauseAfterSubmitRecordDeparture: Pair<Long, Long>,
+        pauseOnRecordDepartureNotesPage: Pair<Long, Long>,
+        pauseAfterSubmitRecordDepartureNotes: Pair<Long, Long>,
     ): ScenarioBuilder {
         val bookingMadeChainBuilder = CoreDsl.feed(spaceBookingsFeeder.getJdbcFeederForUpcomingSpaceBookings(premiseQCode))
             .exec(HttpDsl.addCookie(httpRequestHelper.connectSidAuthCookie!!))
+            .pause(pauseBeforeStart.first, pauseBeforeStart.second)
             .exec(
                 pageOrchestrationService.hitViewPremisePageAndDoChecks()
             )
-            .pause(pauseOnViewPremisePage)
+            .pause(pauseOnViewPremisePage.first, pauseOnViewPremisePage.second)
             .exec(
                 pageOrchestrationService.hitViewPlacementPageAndDoChecks()
             )
-            .pause(pauseOnViewPlacementPage)
+            .pause(pauseOnViewPlacementPage.first, pauseOnViewPlacementPage.second)
             .exec(
                 pageOrchestrationService.hitRecordArrivalPageAndDoChecks()
             )
-            .pause(pauseOnRecordArrivalPage)
+            .pause(pauseOnRecordArrivalPage.first, pauseOnRecordArrivalPage.second)
             .exec(
                 pageOrchestrationService.submitRecordArrivalFormAndDoChecks()
             )
-            .pause(pauseAfterRecordArrival)
+            .pause(pauseAfterRecordArrival.first, pauseAfterRecordArrival.second)
             .exec(
                 pageOrchestrationService.hitEditKeyWorkerPageAndDoChecks()
             )
-            .pause(pauseOnEditKeyWorkerPage)
+            .pause(pauseOnEditKeyWorkerPage.first, pauseOnEditKeyWorkerPage.second)
             .exec(
                 pageOrchestrationService.submitEditKeyWorkerFormAndDoChecks()
             )
-            .pause(pauseAfterKeyWorkerEdited)
+            .pause(pauseAfterKeyWorkerEdited.first, pauseAfterKeyWorkerEdited.second)
             .exec(
                 pageOrchestrationService.hitRecordDeparturePageAndDoChecks()
             )
-            .pause(pauseOnRecordDeparturePage)
+            .pause(pauseOnRecordDeparturePage.first, pauseOnRecordDeparturePage.second)
             .exec(
                 pageOrchestrationService.submitRecordDepartureFormAndDoChecks()
             )
-            .pause(pauseAfterSubmitRecordDeparture)
+            .pause(pauseAfterSubmitRecordDeparture.first, pauseAfterSubmitRecordDeparture.second)
             .exec(
                 pageOrchestrationService.hitRecordDepartureNotesPageAndDoChecks()
             )
-            .pause(pauseOnRecordDepartureNotesPage)
+            .pause(pauseOnRecordDepartureNotesPage.first, pauseOnRecordDepartureNotesPage.second)
             .exec(
                 pageOrchestrationService.submitRecordDepartureNotesFormAndDoChecks()
             )
-            .pause(pauseAfterSubmitRecordDepartureNotes)
+            .pause(pauseAfterSubmitRecordDepartureNotes.first, pauseAfterSubmitRecordDepartureNotes.second)
             .exitHereIfFailed()
 
         return CoreDsl.scenario(scenarioName)
